@@ -18,11 +18,13 @@ import { DriftModule } from './modules/drift';
 import { RaydiumModule } from './modules/raydium';
 import { MeteoraModule } from './modules/meteora';
 import { NFTModule } from './modules/nft';
+import { AgentDEXModule, AgentDEXConfig } from './modules/agentdex';
 
 export interface SDKConfig {
   wallet?: Keypair;
   rpcUrl?: string;
   commitment?: 'processed' | 'confirmed' | 'finalized';
+  agentDex?: AgentDEXConfig;
 }
 
 export class SolanaAgentSDK {
@@ -46,6 +48,7 @@ export class SolanaAgentSDK {
   public readonly raydium: RaydiumModule;
   public readonly meteora: MeteoraModule;
   public readonly nft: NFTModule;
+  public readonly agentDex?: AgentDEXModule;
 
   constructor(config: SDKConfig = {}) {
     const rpcUrl = config.rpcUrl || 'https://api.mainnet-beta.solana.com';
@@ -69,6 +72,11 @@ export class SolanaAgentSDK {
     this.raydium = new RaydiumModule(this.connection, this.wallet);
     this.meteora = new MeteoraModule(this.connection, this.wallet);
     this.nft = new NFTModule(this.connection, this.wallet);
+
+    // AgentDEX (optional — requires config)
+    if (config.agentDex) {
+      this.agentDex = new AgentDEXModule(this.connection, this.wallet, config.agentDex);
+    }
   }
 }
 
@@ -88,3 +96,5 @@ export { DriftModule } from './modules/drift';
 export { RaydiumModule } from './modules/raydium';
 export { MeteoraModule } from './modules/meteora';
 export { NFTModule } from './modules/nft';
+export { AgentDEXModule } from './modules/agentdex';
+export type { AgentDEXConfig } from './modules/agentdex';

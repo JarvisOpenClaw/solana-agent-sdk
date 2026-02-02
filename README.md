@@ -39,6 +39,10 @@ const price = await sdk.pyth.getPrice('SOL');
 
 // NFT operations
 const floor = await sdk.nft.getFloorPrice('mad_lads');
+
+// AgentDEX — swap routing, limit orders, portfolio tracking
+const adxQuote = await sdk.agentDex?.getQuote(SOL_MINT, USDC_MINT, 1_000_000_000);
+const portfolio = await sdk.agentDex?.getPortfolio(walletAddress);
 ```
 
 ## Modules
@@ -55,6 +59,80 @@ const floor = await sdk.nft.getFloorPrice('mad_lads');
 | `raydium` | 🚧 Skeleton | AMM, CLMM pools |
 | `meteora` | 🚧 Skeleton | DLMM, pools |
 | `nft` | 🚧 Skeleton | Tensor, Magic Eden |
+| `agentDex` | ✅ Working | AgentDEX swap routing, limit orders, portfolio |
+
+## AgentDEX Module
+
+The `agentDex` module connects to the [AgentDEX](https://agentdex.com) API for optimised swap routing, limit orders, and portfolio tracking.
+
+### Setup
+
+Pass your AgentDEX credentials when creating the SDK:
+
+```typescript
+const sdk = new SolanaAgentSDK({
+  wallet: yourKeypair,
+  rpcUrl: 'https://api.mainnet-beta.solana.com',
+  agentDex: {
+    baseUrl: 'https://api.agentdex.com',   // or your self-hosted URL
+    apiKey: 'adx_xxx',                      // Bearer token
+  },
+});
+```
+
+### Swap
+
+```typescript
+// Get a quote (amount in base units, slippage in bps)
+const quote = await sdk.agentDex!.getQuote(inputMint, outputMint, 1_000_000_000, 50);
+
+// Execute the swap
+const result = await sdk.agentDex!.executeSwap(inputMint, outputMint, 1_000_000_000, 50);
+console.log('tx:', result.txSignature);
+```
+
+### Portfolio
+
+```typescript
+const portfolio = await sdk.agentDex!.getPortfolio(walletAddress);
+console.log(`Total: $${portfolio.totalUsdValue}`);
+portfolio.tokens.forEach(t => console.log(`${t.symbol}: ${t.balance} ($${t.usdValue})`));
+```
+
+### Prices
+
+```typescript
+const sol = await sdk.agentDex!.getPrice('So11111111111111111111111111111111111111112');
+const all = await sdk.agentDex!.getPrices();
+```
+
+### Limit Orders
+
+```typescript
+// Create
+const order = await sdk.agentDex!.createLimitOrder(inputMint, outputMint, 500_000_000, 185.50);
+
+// List
+const orders = await sdk.agentDex!.getLimitOrders();
+
+// Cancel
+await sdk.agentDex!.cancelLimitOrder(order.id);
+```
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/quote` | Get swap quote |
+| POST | `/api/v1/swap` | Execute swap |
+| GET | `/api/v1/portfolio/:wallet` | Portfolio balances + USD |
+| GET | `/api/v1/prices/:mint` | Single token price |
+| GET | `/api/v1/prices` | All token prices |
+| POST | `/api/v1/limit-order` | Create limit order |
+| GET | `/api/v1/limit-order` | List limit orders |
+| DELETE | `/api/v1/limit-order/:id` | Cancel limit order |
+
+---
 
 ## Join the Team!
 
