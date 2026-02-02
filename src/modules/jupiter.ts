@@ -42,7 +42,7 @@ export class JupiterModule {
       `${this.baseUrl}/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amountLamports}&slippageBps=${slippage * 100}`
     );
     
-    const data = await response.json();
+    const data: any = await response.json();
     
     return {
       inAmount: data.inAmount,

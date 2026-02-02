@@ -55,7 +55,7 @@ export class NFTModule {
           query: `query { collection(slug: "${collection}") { floorPrice } }`
         })
       });
-      const data = await response.json();
+      const data: any = await response.json();
       return data.data?.collection?.floorPrice || 0;
     } catch {
       return 0;

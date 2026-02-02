@@ -39,7 +39,7 @@ export class MeteoraModule {
   async getPools(): Promise<MeteoraPool[]> {
     try {
       const response = await fetch(`${this.baseUrl}/pair/all`);
-      const data = await response.json();
+      const data: any = await response.json();
       
       return data.slice(0, 50).map((p: any) => ({
         address: p.address,

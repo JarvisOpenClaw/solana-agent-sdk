@@ -140,7 +140,7 @@ export class RPCModule {
    */
   async getTransaction(signature: string): Promise<{
     slot: number;
-    blockTime: number | null;
+    blockTime: number | null | undefined;
     fee: number;
     success: boolean;
     logs: string[];
@@ -166,7 +166,7 @@ export class RPCModule {
   async getSignaturesForAddress(
     address: string | PublicKey,
     limit = 20
-  ): Promise<{ signature: string; slot: number; blockTime: number | null; err: any }[]> {
+  ): Promise<{ signature: string; slot: number; blockTime: number | null | undefined; err: any }[]> {
     const pubkey = typeof address === 'string' ? new PublicKey(address) : address;
     const signatures = await this.connection.getSignaturesForAddress(pubkey, { limit });
     

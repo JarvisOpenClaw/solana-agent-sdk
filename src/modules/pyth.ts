@@ -27,7 +27,7 @@ export class PythModule {
     if (!feedId) throw new Error(`Unknown symbol: ${symbol}`);
 
     const response = await fetch(`${this.baseUrl}/api/latest_price_feeds?ids[]=${feedId}`);
-    const data = await response.json();
+    const data: any = await response.json();
     
     if (!data[0]) throw new Error(`No price data for ${symbol}`);
 

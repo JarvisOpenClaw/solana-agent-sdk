@@ -32,7 +32,7 @@ export class KaminoModule {
   async getVaults(): Promise<KaminoVault[]> {
     // Fetch available Kamino vaults
     const response = await fetch(`${this.baseUrl}/vaults`);
-    const data = await response.json();
+    const data: any = await response.json();
     
     return data.vaults?.map((v: any) => ({
       address: v.address,

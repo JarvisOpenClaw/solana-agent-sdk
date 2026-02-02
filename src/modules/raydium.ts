@@ -37,7 +37,7 @@ export class RaydiumModule {
   async getPools(): Promise<RaydiumPool[]> {
     try {
       const response = await fetch(`${this.baseUrl}/main/pairs`);
-      const data = await response.json();
+      const data: any = await response.json();
       
       return data.slice(0, 50).map((p: any) => ({
         id: p.ammId,

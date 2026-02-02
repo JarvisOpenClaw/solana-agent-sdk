@@ -6,7 +6,7 @@ export interface AccountData {
   owner: string;
   executable: boolean;
   data: Buffer;
-  rentEpoch: number;
+  rentEpoch?: number;
 }
 
 export interface ParsedAccountData {

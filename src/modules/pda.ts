@@ -37,16 +37,16 @@ export class PDAModule {
   ): PublicKey {
     const programPubkey = typeof programId === 'string' ? new PublicKey(programId) : programId;
     
-    const seedBuffers = seeds.map(seed => {
+    const seedBuffers: Buffer[] = seeds.map(seed => {
       if (typeof seed === 'string') {
         return Buffer.from(seed);
       }
-      return seed;
+      return Buffer.from(seed);
     });
 
     seedBuffers.push(Buffer.from([bump]));
 
-    const [address] = PublicKey.createProgramAddressSync(seedBuffers, programPubkey);
+    const address = PublicKey.createProgramAddressSync(seedBuffers, programPubkey);
     return address;
   }
 
