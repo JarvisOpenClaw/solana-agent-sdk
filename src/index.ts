@@ -4,6 +4,11 @@ import { TokensModule } from './modules/tokens';
 import { JupiterModule } from './modules/jupiter';
 import { StakingModule } from './modules/staking';
 import { PythModule } from './modules/pyth';
+import { KaminoModule } from './modules/kamino';
+import { DriftModule } from './modules/drift';
+import { RaydiumModule } from './modules/raydium';
+import { MeteoraModule } from './modules/meteora';
+import { NFTModule } from './modules/nft';
 
 export interface SDKConfig {
   wallet?: Keypair;
@@ -18,6 +23,11 @@ export class SolanaAgentSDK {
   public readonly jupiter: JupiterModule;
   public readonly staking: StakingModule;
   public readonly pyth: PythModule;
+  public readonly kamino: KaminoModule;
+  public readonly drift: DriftModule;
+  public readonly raydium: RaydiumModule;
+  public readonly meteora: MeteoraModule;
+  public readonly nft: NFTModule;
 
   constructor(config: SDKConfig = {}) {
     const rpcUrl = config.rpcUrl || 'https://api.mainnet-beta.solana.com';
@@ -28,11 +38,22 @@ export class SolanaAgentSDK {
     this.jupiter = new JupiterModule(this.connection, this.wallet);
     this.staking = new StakingModule(this.connection, this.wallet);
     this.pyth = new PythModule(this.connection);
+    this.kamino = new KaminoModule(this.connection, this.wallet);
+    this.drift = new DriftModule(this.connection, this.wallet);
+    this.raydium = new RaydiumModule(this.connection, this.wallet);
+    this.meteora = new MeteoraModule(this.connection, this.wallet);
+    this.nft = new NFTModule(this.connection, this.wallet);
   }
 }
 
+// Export all modules
 export { WalletModule } from './modules/wallet';
 export { TokensModule } from './modules/tokens';
 export { JupiterModule } from './modules/jupiter';
 export { StakingModule } from './modules/staking';
 export { PythModule } from './modules/pyth';
+export { KaminoModule } from './modules/kamino';
+export { DriftModule } from './modules/drift';
+export { RaydiumModule } from './modules/raydium';
+export { MeteoraModule } from './modules/meteora';
+export { NFTModule } from './modules/nft';
