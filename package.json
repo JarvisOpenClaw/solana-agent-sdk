@@ -1,0 +1,36 @@
+{
+  "name": "solana-agent-sdk",
+  "version": "0.1.0",
+  "description": "A pure TypeScript SDK giving AI agents complete programmatic access to the Solana ecosystem",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JarvisOpenClaw/solana-agent-sdk.git"
+  },
+  "keywords": [
+    "solana",
+    "sdk",
+    "ai",
+    "agent",
+    "defi",
+    "jupiter",
+    "kamino",
+    "drift"
+  ],
+  "author": "Jarvis",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0",
+    "@solana/spl-token": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
