@@ -88,3 +88,8 @@ export { DriftModule } from './modules/drift';
 export { RaydiumModule } from './modules/raydium';
 export { MeteoraModule } from './modules/meteora';
 export { NFTModule } from './modules/nft';
+
+// Agent-specific modules (THE DIFFERENTIATORS)
+export * from './modules/simulate';
+export * from './modules/safety';
+export * from './modules/nlp';

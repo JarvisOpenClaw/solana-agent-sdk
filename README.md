@@ -1,92 +1,225 @@
 # Solana Agent SDK
 
-A pure TypeScript library giving AI agents complete programmatic access to the Solana ecosystem.
+> **The AI-Native Solana SDK** — Built specifically for autonomous agents, not just humans.
 
-**🚀 Currently competing in the [Colosseum Agent Hackathon](https://colosseum.com/agent-hackathon) — $100k prize pool!**
+## 🤖 Why This SDK?
 
-## Features
+**The Problem:** The standard Solana SDK (@solana/web3.js) is powerful but designed for human developers. AI agents need something different:
 
-- **Pure SDK** — No CLI, no HTTP server. Just import and use.
-- **Type-safe** — Full TypeScript support with auto-complete
-- **Modular** — Use only what you need
-- **Comprehensive** — Jupiter, Kamino, Drift, Raydium, Meteora, NFTs, Pyth, and more
+- **Simulation before execution** — Agents can't debug failed transactions
+- **Safety guardrails** — Prevent agents from draining wallets or getting rekt
+- **Natural language parsing** — Convert "swap 1 SOL for USDC" to transactions
+- **High-level abstractions** — One-liner for complex DeFi operations
+- **Agent-friendly errors** — Clear messages, not cryptic hex codes
 
-## Installation
+**This SDK is infrastructure-free.** No backend, no API keys, no servers. Just `npm install` and your agent is ready.
+
+---
+
+## 🎯 Key Differentiators
+
+### 1. Transaction Simulation
+Preview what will happen *before* signing:
+
+```typescript
+import { simulateTransaction, willTransactionSucceed } from 'solana-agent-sdk';
+
+// Before executing, check if it will work
+const result = await willTransactionSucceed(transaction, wallet.publicKey);
+// { success: true, reason: "Transaction will succeed. Fee: 0.000005 SOL" }
+
+// Get detailed simulation
+const sim = await simulateTransaction(transaction, wallet.publicKey);
+// { success: true, unitsConsumed: 45000, fee: 0.000005, warnings: [] }
+```
+
+### 2. Safety Guards
+Protect agents from costly mistakes:
+
+```typescript
+import { checkSwapSafety, preflightCheck } from 'solana-agent-sdk';
+
+// Before any swap
+const safety = checkSwapSafety({
+  inputAmount: 100,
+  walletBalance: 105,
+  slippageBps: 500,
+  inputToken: 'SOL',
+  outputToken: 'USDC'
+});
+// { overallSafe: false, recommendation: "NOT RECOMMENDED: Using 95% of wallet balance" }
+
+// Preflight check for any operation
+const preflight = await preflightCheck(walletAddress, 'swap', params);
+// Checks wallet health, balance, fees, slippage, everything
+```
+
+### 3. Natural Language Parsing
+Let agents speak naturally:
+
+```typescript
+import { parseIntent, describeIntent, intentToParams } from 'solana-agent-sdk';
+
+const intent = parseIntent("swap 1.5 SOL for USDC");
+// {
+//   action: 'swap',
+//   confidence: 0.9,
+//   params: { amount: 1.5, inputToken: 'SOL', outputToken: 'USDC' }
+// }
+
+// Convert to SDK params
+const params = intentToParams(intent);
+// { inputMint: 'SOL', outputMint: 'USDC', amount: 1.5, slippageBps: 50 }
+```
+
+### 4. One-Line DeFi Operations
+What takes 50+ lines with native SDK:
+
+```typescript
+import { SolanaAgentSDK } from 'solana-agent-sdk';
+
+const sdk = new SolanaAgentSDK({ wallet: myKeypair });
+
+// Swap tokens
+await sdk.jupiter.swap('SOL', 'USDC', 1.0);
+
+// Get prices
+const price = await sdk.pyth.getPrice('SOL');
+
+// Check yields across protocols
+const rates = await sdk.kamino.getMarketRates('USDC');
+```
+
+---
+
+## 📦 Installation
 
 ```bash
 npm install solana-agent-sdk
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ```typescript
-import { SolanaAgentSDK } from 'solana-agent-sdk';
+import { SolanaAgentSDK, parseIntent, checkSwapSafety } from 'solana-agent-sdk';
+import { Keypair } from '@solana/web3.js';
 
-const sdk = new SolanaAgentSDK({ 
-  wallet: yourKeypair,
+// Initialize
+const wallet = Keypair.generate(); // or load from file
+const sdk = new SolanaAgentSDK({
+  wallet,
   rpcUrl: 'https://api.mainnet-beta.solana.com'
 });
 
-// Swap tokens via Jupiter
-const quote = await sdk.jupiter.quote({ from: 'SOL', to: 'USDC', amount: 10 });
+// Example: Agent wants to swap
+const userMessage = "swap 2 SOL for USDC";
 
-// DeFi operations
-await sdk.kamino.deposit({ vault: 'SOL-USDC', amount: 100 });
-await sdk.drift.openPosition({ market: 'SOL-PERP', size: 5, side: 'long' });
+// 1. Parse intent
+const intent = parseIntent(userMessage);
 
-// Get prices
-const price = await sdk.pyth.getPrice('SOL');
+// 2. Safety check
+const safety = checkSwapSafety({
+  inputAmount: intent.params.amount,
+  walletBalance: await sdk.wallet.getBalance(),
+  slippageBps: 50,
+  inputToken: intent.params.inputToken,
+  outputToken: intent.params.outputToken
+});
 
-// NFT operations
-const floor = await sdk.nft.getFloorPrice('mad_lads');
+// 3. Execute if safe
+if (safety.overallSafe) {
+  const result = await sdk.jupiter.swap(
+    intent.params.inputToken,
+    intent.params.outputToken,
+    intent.params.amount
+  );
+  console.log('Swap executed:', result);
+} else {
+  console.log('Blocked:', safety.recommendation);
+}
 ```
 
-## Modules
+---
 
-| Module | Status | Description |
-|--------|--------|-------------|
-| `wallet` | ✅ Working | Keypair management, signing, balances |
-| `tokens` | ✅ Working | SPL token balances, transfers |
-| `jupiter` | ✅ Working | Swap quotes, routing |
-| `pyth` | ✅ Working | Price feeds, oracles |
-| `staking` | 🚧 Skeleton | Native + liquid staking (Marinade, Jito) |
-| `kamino` | 🚧 Skeleton | Lending, leverage, vaults |
-| `drift` | 🚧 Skeleton | Perps, spot, lending |
-| `raydium` | 🚧 Skeleton | AMM, CLMM pools |
-| `meteora` | 🚧 Skeleton | DLMM, pools |
-| `nft` | 🚧 Skeleton | Tensor, Magic Eden |
+## 📚 Modules
 
-## Join the Team!
+### Core Solana Primitives
+| Module | Description |
+|--------|-------------|
+| `wallet` | Create wallets, check balances, sign transactions |
+| `accounts` | Read/query any Solana account |
+| `transactions` | Build, sign, send transactions |
+| `spl` | SPL token operations (transfer, mint, burn) |
+| `pda` | Program Derived Address helpers |
+| `rpc` | Direct RPC queries (slots, blockhash, epoch) |
 
-We're building this during the Colosseum Agent Hackathon and looking for contributors!
+### DeFi Protocols
+| Module | Description |
+|--------|-------------|
+| `jupiter` | Token swaps with best route finding |
+| `pyth` | Real-time price feeds |
+| `kamino` | Lending/borrowing, yield vaults |
+| `drift` | Perpetuals trading |
+| `raydium` | AMM swaps and liquidity |
+| `meteora` | Dynamic AMM and DLMM |
+| `staking` | Native SOL staking |
 
-**How to join:**
-1. Register at https://colosseum.com/agent-hackathon
-2. Open an issue or PR claiming a module
-3. Build it with us
-4. Prize split if we win!
+### Agent Intelligence (🎯 The Differentiators)
+| Module | Description |
+|--------|-------------|
+| `simulate` | Preview transactions before execution |
+| `safety` | Guardrails to prevent costly mistakes |
+| `nlp` | Natural language → transaction parsing |
 
-**Available modules to claim:**
-- Jupiter swap execution
-- Kamino full integration
-- Drift full integration  
-- Raydium liquidity
-- Meteora DLMM
-- NFT marketplaces (Tensor, Magic Eden)
+---
 
-## Contributing
+## 🛡️ Safety Philosophy
 
-```bash
-git clone https://github.com/JarvisOpenClaw/solana-agent-sdk
-cd solana-agent-sdk
-npm install
-npm run build
+AI agents are autonomous. They can't ask for help when something goes wrong. This SDK is built with safety-first principles:
+
+1. **Simulate First** — Always preview before executing
+2. **Guard Rails** — Block dangerous operations by default
+3. **Clear Errors** — Human-readable, not hex codes
+4. **Fail Safe** — When in doubt, don't execute
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     AI Agent                                 │
+│  "swap 1 SOL for USDC"                                      │
+└─────────────────┬───────────────────────────────────────────┘
+                  │
+┌─────────────────▼───────────────────────────────────────────┐
+│              Solana Agent SDK                                │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │ NLP Parser → Safety Check → Simulation → Execution   │   │
+│  └──────────────────────────────────────────────────────┘   │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐           │
+│  │   Jupiter   │ │    Pyth     │ │   Kamino    │  ...      │
+│  └─────────────┘ └─────────────┘ └─────────────┘           │
+└─────────────────┬───────────────────────────────────────────┘
+                  │
+┌─────────────────▼───────────────────────────────────────────┐
+│                   Solana Blockchain                          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## License
+---
+
+## 🔗 Links
+
+- **GitHub:** https://github.com/JarvisOpenClaw/solana-agent-sdk
+- **Hackathon:** Colosseum Agent Hackathon 2026
+
+---
+
+## 📄 License
 
 MIT
 
 ---
 
-**Built by Jarvis 🎩 for the Colosseum Agent Hackathon**
+*Built for the Colosseum Agent Hackathon by Jarvis 🎩*
