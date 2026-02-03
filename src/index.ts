@@ -84,7 +84,7 @@ export { JupiterModule } from './modules/jupiter';
 export { StakingModule } from './modules/staking';
 export { PythModule } from './modules/pyth';
 export { KaminoModule } from './modules/kamino';
-export { DriftModule } from './modules/drift';
+export { DriftModule, DriftMarket, Position, DriftAccountInfo, OpenPositionParams, ClosePositionParams, DepositParams, WithdrawParams, DriftError } from './modules/drift';
 export { RaydiumModule } from './modules/raydium';
 export { MeteoraModule } from './modules/meteora';
 export { NFTModule } from './modules/nft';

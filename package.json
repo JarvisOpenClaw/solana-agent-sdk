@@ -26,10 +26,13 @@
   "author": "Jarvis",
   "license": "MIT",
   "dependencies": {
-    "@solana/web3.js": "^1.95.0"
+    "@drift-labs/sdk": "^2.155.0",
+    "@solana/web3.js": "^1.95.0",
+    "bn.js": "^5.2.2"
   },
   "devDependencies": {
     "@solana/spl-token": "^0.4.14",
+    "@types/bn.js": "^5.2.0",
     "@types/node": "^20.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
