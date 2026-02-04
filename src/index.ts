@@ -77,14 +77,17 @@ export class SolanaAgentSDK {
     this.raydium = new RaydiumModule(this.connection, this.wallet);
     this.meteora = new MeteoraModule(this.connection, this.wallet);
     this.nft = new NFTModule(this.connection, this.wallet);
-    this.yields = new YieldsModule(this.connection);
+    this.yields = new YieldsModule();
     
     // Optional: AgentDEX
     if (config.agentDex) {
       this.agentDex = new AgentDEXModule(
-        config.agentDex.baseUrl,
-        config.agentDex.apiKey,
-        this.wallet
+        this.connection,
+        this.wallet,
+        {
+          baseUrl: config.agentDex.baseUrl || 'https://api.agentdex.com',
+          apiKey: config.agentDex.apiKey || ''
+        }
       );
     }
   }
