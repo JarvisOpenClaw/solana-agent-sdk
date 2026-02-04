@@ -19,11 +19,16 @@ import { RaydiumModule } from './modules/raydium';
 import { MeteoraModule } from './modules/meteora';
 import { NFTModule } from './modules/nft';
 import { YieldsModule } from './modules/yields';
+import { AgentDEXModule } from './modules/agentdex';
 
 export interface SDKConfig {
   wallet?: Keypair;
   rpcUrl?: string;
   commitment?: 'processed' | 'confirmed' | 'finalized';
+  agentDex?: {
+    baseUrl?: string;
+    apiKey?: string;
+  };
 }
 
 export class SolanaAgentSDK {
@@ -48,6 +53,7 @@ export class SolanaAgentSDK {
   public readonly meteora: MeteoraModule;
   public readonly nft: NFTModule;
   public readonly yields: YieldsModule;
+  public readonly agentDex?: AgentDEXModule;
 
   constructor(config: SDKConfig = {}) {
     const rpcUrl = config.rpcUrl || 'https://api.mainnet-beta.solana.com';
@@ -72,6 +78,15 @@ export class SolanaAgentSDK {
     this.meteora = new MeteoraModule(this.connection, this.wallet);
     this.nft = new NFTModule(this.connection, this.wallet);
     this.yields = new YieldsModule(this.connection);
+    
+    // Optional: AgentDEX
+    if (config.agentDex) {
+      this.agentDex = new AgentDEXModule(
+        config.agentDex.baseUrl,
+        config.agentDex.apiKey,
+        this.wallet
+      );
+    }
   }
 }
 
@@ -92,6 +107,7 @@ export { RaydiumModule } from './modules/raydium';
 export { MeteoraModule } from './modules/meteora';
 export { NFTModule } from './modules/nft';
 export { YieldsModule } from './modules/yields';
+export { AgentDEXModule } from './modules/agentdex';
 
 // Agent-specific modules (THE DIFFERENTIATORS)
 export * from './modules/simulate';
