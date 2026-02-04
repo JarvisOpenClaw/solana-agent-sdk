@@ -18,6 +18,7 @@ import { DriftModule } from './modules/drift';
 import { RaydiumModule } from './modules/raydium';
 import { MeteoraModule } from './modules/meteora';
 import { NFTModule } from './modules/nft';
+import { YieldsModule } from './modules/yields';
 
 export interface SDKConfig {
   wallet?: Keypair;
@@ -46,6 +47,7 @@ export class SolanaAgentSDK {
   public readonly raydium: RaydiumModule;
   public readonly meteora: MeteoraModule;
   public readonly nft: NFTModule;
+  public readonly yields: YieldsModule;
 
   constructor(config: SDKConfig = {}) {
     const rpcUrl = config.rpcUrl || 'https://api.mainnet-beta.solana.com';
@@ -69,6 +71,7 @@ export class SolanaAgentSDK {
     this.raydium = new RaydiumModule(this.connection, this.wallet);
     this.meteora = new MeteoraModule(this.connection, this.wallet);
     this.nft = new NFTModule(this.connection, this.wallet);
+    this.yields = new YieldsModule(this.connection);
   }
 }
 
@@ -88,6 +91,7 @@ export { DriftModule, DriftMarket, Position, DriftAccountInfo, OpenPositionParam
 export { RaydiumModule } from './modules/raydium';
 export { MeteoraModule } from './modules/meteora';
 export { NFTModule } from './modules/nft';
+export { YieldsModule } from './modules/yields';
 
 // Agent-specific modules (THE DIFFERENTIATORS)
 export * from './modules/simulate';
