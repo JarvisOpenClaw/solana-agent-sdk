@@ -1,0 +1,14 @@
+# Development files
+tests/
+examples/
+docs/
+*.test.ts
+tsconfig.json
+.git
+.gitignore
+
+# Keep these for npm
+README.md
+LICENSE
+package.json
+dist/
