@@ -171,7 +171,7 @@ await simulateTransaction(transaction, wallet.publicKey);
 |--------|--------|------------|
 | `pyth` | ✅ Full | Live price feeds for all assets |
 | `drift` | ✅ Full | Perpetuals trading, market data |
-| `jupiter` | 🟡 Partial | Quote API (execution coming soon) |
+| `jupiter` | ✅ Full | Token swaps with quote + execution |
 | `kamino` | 🟡 Partial | Market rates (deposits coming soon) |
 
 ---

@@ -1,6 +1,18 @@
 # Changelog
 
-## [0.1.0] - 2026-02-06
+## [0.1.2] - 2026-02-06
+
+### Added
+- ✅ **Jupiter Swap Execution** - Full end-to-end swap implementation
+  - `swap(from, to, amount, slippage)` now executes actual swaps
+  - Handles transaction building, signing, and confirmation
+  - Returns signature + amounts + price impact
+
+### Changed
+- Updated Jupiter module from quote-only to full execution
+- Added SwapResult interface with signature and trade details
+
+## [0.1.1] - 2026-02-06
 
 ### Added
 - 🎯 **Natural Language Parsing** - Parse agent intents from natural language
@@ -17,10 +29,5 @@ These features don't exist in @solana/web3.js - they're what makes this agent-sp
 1. `parseIntent("swap 1 SOL for USDC")` → structured params
 2. `checkSwapSafety()` → blocks dangerous operations
 3. `simulateTransaction()` → preview before signing
-
-### Status
-- ✅ Core features: 100% working
-- ✅ Agent intelligence: 100% working
-- 🟡 DeFi integrations: Pyth and Drift fully working, Jupiter partial
 
 Built for Colosseum Agent Hackathon 2026 - "Most Agentic" category
