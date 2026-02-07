@@ -33,7 +33,10 @@
   "devDependencies": {
     "@solana/spl-token": "^0.4.14",
     "@types/bn.js": "^5.2.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
