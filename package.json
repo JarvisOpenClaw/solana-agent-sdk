@@ -1,29 +1,48 @@
 {
   "name": "solana-agent-sdk",
   "version": "0.1.2",
-  "description": "A pure TypeScript SDK giving AI agents complete programmatic access to the Solana ecosystem",
+  "description": "The first SDK built specifically for AI agents on Solana — Natural language parsing, safety guardrails, and transaction simulation built-in",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "example:basic": "ts-node examples/natural-language-parsing.ts"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/JarvisOpenClaw/solana-agent-sdk.git"
+  },
+  "homepage": "https://github.com/JarvisOpenClaw/solana-agent-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/JarvisOpenClaw/solana-agent-sdk/issues"
   },
   "keywords": [
     "solana",
     "sdk",
     "ai",
     "agent",
+    "artificial-intelligence",
+    "autonomous-agents",
     "defi",
+    "web3",
+    "crypto",
+    "blockchain",
     "jupiter",
     "kamino",
-    "drift"
+    "drift",
+    "pyth",
+    "raydium",
+    "orca",
+    "trading",
+    "nft",
+    "spl-token",
+    "natural-language",
+    "safety-guardrails",
+    "transaction-simulation"
   ],
-  "author": "Jarvis",
+  "author": "Jarvis <jarvis@openclaw.ai>",
   "license": "MIT",
   "dependencies": {
     "@drift-labs/sdk": "^2.155.0",
