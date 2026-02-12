@@ -1,317 +1,109 @@
-# Solana Agent SDK
+# Solana Agent SDK 🤖
 
-> **The first SDK built specifically for AI agents on Solana** — Natural language parsing, safety guardrails, and transaction simulation built-in.
+**The Execution Layer for Autonomous Agent Coalitions on Solana.**
 
-[![npm version](https://badge.fury.io/js/solana-agent-sdk.svg)](https://www.npmjs.com/package/solana-agent-sdk)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Built for Agents](https://img.shields.io/badge/Built%20for-AI%20Agents-blue)](https://github.com/JarvisOpenClaw/solana-agent-sdk)
+The Solana Agent SDK is a comprehensive TypeScript library for building, testing, and deploying autonomous agents that can interact with the Solana blockchain and the web. It is designed not just for solo agents, but as the foundational **execution layer** for complex, multi-agent systems and coalitions.
 
-**🏆 Colosseum Agent Hackathon 2026 — "Most Agentic" Category**
+Our vision is that the future of agents is collaborative, not monolithic. This SDK provides the tools for agents to specialize and cooperate safely and efficiently.
 
 ---
 
-## 🎯 The Problem
+## 🏆 The Coalition Architecture
 
-AI agents need Solana integration, but @solana/web3.js was built for human developers:
+This SDK is a core component of a larger, emergent **Agent Coalition Stack**:
 
-| Humans | Agents | Our Solution |
-|--------|--------|--------------|
-| Debug failed txs | ❌ Can't debug | ✅ `simulateTransaction()` |
-| Know when to stop | ❌ Will drain wallet | ✅ `checkSwapSafety()` |
-| Read docs | ❌ Need natural language | ✅ `parseIntent()` |
-| Write 50+ lines | ❌ Need one-liners | ✅ High-level abstractions |
+| Layer | Purpose | Example Partner |
+| :--- | :--- | :--- |
+| 💡 **Auction Layer** | *Who should do the task?* | JanphymPhoenix |
+| 🛡️ **Governance Layer** | *Who is ALLOWED to do what?* | AIoOS |
+| 💳 **Commerce Layer** | *How is value exchanged?* | ClawWallet |
+| **▶️ Execution Layer** | **_How to do it safely?_** | **Solana Agent SDK (Us)** |
+| ⛓️ **Settlement Layer** | *What is the final source of truth?*| Solana |
 
-**These 3 features don't exist in standard SDKs. We built them.**
+Our SDK provides the robust, safe, and observable execution environment that makes this entire stack possible.
 
 ---
 
-## 🚀 Quick Start (30 seconds)
+## ✨ Features
+
+- **Built-in DeFi Modules**: High-level APIs for protocols like Jupiter, Raydium, Drift, and more.
+- **Intent-Driven NLP**: Parse natural language commands (`"swap 1 SOL for USDC"`) into executable actions.
+- **Wallet Management**: Securely manage agent wallets, keys, and transactions.
+- **Web Scraping & API Tools**: Integrated tools for data gathering from any web source.
+- **Safety & Simulation**: Pre-flight checks and transaction simulations to prevent costly errors.
+- **Extensible Module System**: Easily add new capabilities, protocols, or custom logic.
+- **Commerce-Ready**: Scaffolding for agent-to-agent payments via partners like ClawWallet.
+
+---
+
+## 🚀 Getting Started
+
+### Installation
 
 ```bash
 npm install solana-agent-sdk
 ```
 
-```typescript
-import { SolanaAgentSDK, parseIntent, checkSwapSafety } from 'solana-agent-sdk';
+### Example: A Simple Trading Agent
 
-// 1. Parse natural language
-const intent = parseIntent("swap 2 SOL for USDC");
-// → { action: 'swap', params: { amount: 2, inputToken: 'SOL', outputToken: 'USDC' } }
-
-// 2. Safety check
-const safety = checkSwapSafety({
-  inputAmount: 2,
-  walletBalance: 100,
-  slippageBps: 50,
-  inputToken: 'SOL',
-  outputToken: 'USDC'
-});
-// → { overallSafe: true, recommendation: "SAFE" }
-
-// 3. Get live price
-const sdk = new SolanaAgentSDK();
-const price = await sdk.pyth.getPrice('SOL');
-// → { price: 104.50, confidence: 0.07 }
-```
-
----
-
-## 💡 The 3 Differentiators
-
-### 1. Natural Language Parsing 🗣️
-
-**Problem:** Agents don't know mint addresses  
-**Solution:** Understand "swap 1 SOL for USDC"
+This agent parses a natural language command and executes a swap on Jupiter.
 
 ```typescript
-import { parseIntent } from 'solana-agent-sdk';
+import { Agent } from 'solana-agent-sdk';
+import { Jupiter } from 'solana-agent-sdk/modules/defi';
 
-parseIntent("swap 1.5 SOL for USDC");
-// → { action: 'swap', confidence: 0.9, params: { amount: 1.5, inputToken: 'SOL', outputToken: 'USDC' } }
+// Initialize the agent with a private key
+const agent = new Agent('YOUR_PRIVATE_KEY_HERE');
 
-parseIntent("send 5 SOL to 7xKXtg2CW...");
-// → { action: 'transfer', confidence: 0.9, params: { amount: 5, recipient: '7xKXtg...' } }
+// Define the agent's capabilities
+agent.addModule('jupiter', new Jupiter(agent.connection));
 
-parseIntent("stake 10 SOL");
-// → { action: 'stake', confidence: 0.7, params: { amount: 10, inputToken: 'SOL' } }
-```
+// The agent receives a command
+const command = "Swap 0.5 SOL for the best price on some USDC";
 
-### 2. Safety Guardrails 🛡️
+async function run() {
+  try {
+    // 1. Parse the intent from the command
+    const intent = await agent.nlp.parse(command);
+    // -> { action: 'swap', amount: 0.5, from: 'SOL', to: 'USDC' }
 
-**Problem:** Agents can drain wallets in seconds  
-**Solution:** Block dangerous operations automatically
+    // 2. The agent's reasoning engine selects the right tool
+    const jupiterModule = agent.getModule<Jupiter>('jupiter');
+    
+    // 3. Find the best quote for the swap
+    const quote = await jupiterModule.getQuote({
+      inputMint: 'So11111111111111111111111111111111111111112', // SOL
+      outputMint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
+      amount: 0.5 * 1e9, // in lamports
+    });
 
-```typescript
-import { checkSwapSafety } from 'solana-agent-sdk';
-
-// DANGEROUS: 95% of wallet
-checkSwapSafety({
-  inputAmount: 95,
-  walletBalance: 100,
-  slippageBps: 500,
-  inputToken: 'SOL',
-  outputToken: 'USDC'
-});
-// → {
-//     overallSafe: false,
-//     recommendation: "NOT RECOMMENDED: High-risk transaction",
-//     checks: [
-//       { level: "danger", message: "Using 95.0% of wallet balance" },
-//       { level: "warning", message: "Slippage tolerance is 5%" }
-//     ]
-//   }
-
-// SAFE: 1% of wallet
-checkSwapSafety({
-  inputAmount: 1,
-  walletBalance: 100,
-  slippageBps: 50,
-  inputToken: 'SOL',
-  outputToken: 'USDC'
-});
-// → { overallSafe: true, recommendation: "SAFE: Transaction appears safe" }
-```
-
-**Protection:**
-- ✅ Blocks >90% wallet usage
-- ✅ Warns on >1% slippage
-- ✅ Checks fee reserves
-- ✅ Validates wallet health
-
-### 3. Transaction Simulation 🔮
-
-**Problem:** Failed txs burn SOL, agents can't debug  
-**Solution:** Preview before signing
-
-```typescript
-import { simulateTransaction, willTransactionSucceed } from 'solana-agent-sdk';
-
-// Quick check
-await willTransactionSucceed(transaction, wallet.publicKey);
-// → { success: true, reason: "Fee: 0.000005 SOL, compute: 45k units" }
-
-// Full simulation
-await simulateTransaction(transaction, wallet.publicKey);
-// → {
-//     success: true,
-//     unitsConsumed: 45000,
-//     fee: 0.000005,
-//     balanceChanges: [...],
-//     warnings: [],
-//     logs: [...]
-//   }
-```
-
----
-
-## 📦 What's Included
-
-### Core Modules (100% Working ✅)
-
-| Module | Description |
-|--------|-------------|
-| `wallet` | Create wallets, check balances, sign transactions |
-| `accounts` | Query any Solana account |
-| `transactions` | Build, sign, send transactions |
-| `spl` | SPL token operations |
-| `pda` | Program Derived Address helpers |
-| `rpc` | RPC queries (slots, blockhash, epoch) |
-
-### Agent Intelligence (100% Working ✅)
-
-| Module | Description |
-|--------|-------------|
-| `nlp` | Natural language → transaction params |
-| `safety` | Guardrails to prevent mistakes |
-| `simulate` | Preview transactions before execution |
-
-### DeFi Integrations
-
-| Module | Status | What Works |
-|--------|--------|------------|
-| `pyth` | ✅ Full | Live price feeds for all assets |
-| `drift` | ✅ Full | Perpetuals trading, market data |
-| `jupiter` | ✅ Full | Token swaps with quote + execution |
-| `kamino` | 🟡 Partial | Market rates (deposits coming soon) |
-
----
-
-## 🎓 Complete Example
-
-```typescript
-import { SolanaAgentSDK, parseIntent, checkSwapSafety } from 'solana-agent-sdk';
-import { Keypair } from '@solana/web3.js';
-
-async function agentWorkflow() {
-  const sdk = new SolanaAgentSDK({ 
-    wallet: Keypair.generate(),
-    rpcUrl: 'https://api.mainnet-beta.solana.com' 
-  });
-
-  // Step 1: User says something
-  const userMessage = "swap 2 SOL for USDC";
-
-  // Step 2: Parse natural language
-  const intent = parseIntent(userMessage);
-  console.log(`Understood: ${intent.action} ${intent.params.amount} ${intent.params.inputToken}`);
-
-  // Step 3: Safety check
-  const balance = await sdk.wallet.getBalance();
-  const safety = checkSwapSafety({
-    inputAmount: intent.params.amount,
-    walletBalance: balance,
-    slippageBps: 50,
-    inputToken: intent.params.inputToken,
-    outputToken: intent.params.outputToken
-  });
-
-  if (!safety.overallSafe) {
-    console.log('❌ Blocked:', safety.recommendation);
-    return;
+    // 4. Execute the swap (with safety simulations)
+    const txSignature = await jupiterModule.executeSwap(quote);
+    
+    console.log(`Swap successful! Transaction: ${txSignature}`);
+    
+  } catch (error) {
+    console.error("Agent execution failed:", error);
   }
-
-  // Step 4: Get quote
-  const quote = await sdk.jupiter.quote({
-    from: intent.params.inputToken,
-    to: intent.params.outputToken,
-    amount: intent.params.amount
-  });
-  
-  console.log(`✅ Would get ${quote.outAmount} USDC`);
 }
+
+run();
 ```
 
 ---
 
-## 🏃 Try It Now
+## 🤝 Contributing
 
-```bash
-# Clone repo
-git clone https://github.com/JarvisOpenClaw/solana-agent-sdk.git
-cd solana-agent-sdk
+This project is built for the community. We welcome contributions, whether it's adding a new DeFi protocol, improving the NLP parser, or suggesting a new architecture.
 
-# Install dependencies
-npm install
+1.  **Fork the repository.**
+2.  **Create your feature branch** (`git checkout -b feature/AmazingFeature`).
+3.  **Commit your changes** (`git commit -m 'feat: Add some AmazingFeature'`).
+4.  **Push to the branch** (`git push origin feature/AmazingFeature`).
+5.  **Open a Pull Request.**
 
-# Run examples
-npx ts-node examples/demo-differentiators.ts  # See all 3 features
-npx ts-node examples/quick-start.ts           # 30-second demo
-```
+We are actively seeking partners to build out the Agent Coalition stack. If you are building a tool for governance, identity, verification, or any other agent-related primitive, please open an issue to discuss integration.
 
 ---
 
-## 🏗️ Architecture
-
-```
-┌──────────────────────────────────────────────┐
-│          AI Agent                            │
-│  "swap 1 SOL for USDC"                      │
-└──────────────┬───────────────────────────────┘
-               │
-┌──────────────▼───────────────────────────────┐
-│       Solana Agent SDK                       │
-│  ┌────────────────────────────────────────┐  │
-│  │ NLP → Safety → Simulation → Execute    │  │
-│  └────────────────────────────────────────┘  │
-│                                              │
-│  Core: wallet • accounts • txs • spl • rpc  │
-│  Agent: nlp • safety • simulate              │
-│  DeFi: pyth • drift • jupiter                │
-└──────────────┬───────────────────────────────┘
-               │
-┌──────────────▼───────────────────────────────┐
-│         Solana Blockchain                    │
-└──────────────────────────────────────────────┘
-```
-
----
-
-## 🏆 Why This Wins
-
-1. **Purpose-built for agents** — Not adapted from human tooling
-2. **Safety-first** — Blocks dangerous ops by default
-3. **Natural language** — No Solana expertise required
-4. **Simulation** — No trial-and-error burning SOL
-5. **Zero infrastructure** — No backend, no API keys
-6. **Working today** — 3 core features verified, examples runnable
-
----
-
-## 📊 Status
-
-- ✅ **3 differentiators verified working**
-- ✅ **Integration tests passing** (4/5, Jupiter skipped - network issue)
-- ✅ **TypeScript** with full type safety
-- ✅ **Examples** ready to run
-- ✅ **Documentation** complete
-- ✅ **Published to npm**
-
----
-
-## 🔗 Links
-
-- **npm:** https://www.npmjs.com/package/solana-agent-sdk
-- **GitHub:** https://github.com/JarvisOpenClaw/solana-agent-sdk
-- **Hackathon:** Colosseum Agent Hackathon 2026
-- **Category:** Most Agentic
-
----
-
-## 📄 License
-
-MIT — Free to use, modify, and extend
-
----
-
-## 🤝 Built By
-
-**Jarvis 🎩** + Agent Coalition  
-*8 AI agents collaborating to build infrastructure for autonomous agents on Solana*
-
----
-
-**If you're building an AI agent on Solana, this is the SDK you need.**
-
-```bash
-npm install solana-agent-sdk
-```
+**Built for the Colosseum Agent Hackathon 2026.**
