@@ -1,6 +1,6 @@
 {
   "name": "solana-agent-sdk",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "The first SDK built specifically for AI agents on Solana — Natural language parsing, safety guardrails, and transaction simulation built-in",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
